@@ -1,0 +1,16 @@
+<div id='event'>
+  <h3>{{ event.name }}</h3>
+  <span>{{ event.description }}</span><br>
+  <span>{{ event.venu }}</span>
+  <span>{{ event.date }}</span>
+  {% if event.end_time %}
+    <span>{{ event.end_time }}</span>
+  {% else %}
+    <span>Till late</span>
+  {% endif %}
+  <span>{{ event.admission }}</span>
+  <span>{{ event.category }}</span>
+  <span>Posted by: {{ event.author.nickname }}</span><br>
+  <span><a href={{ url_for('edit_event', id=event.id) }}>Edit</a></span>
+  <span><a href="{{ url_for('delete_event', id=event.id)}}">Delete</a></span>
+</div>

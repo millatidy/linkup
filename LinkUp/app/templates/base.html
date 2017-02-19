@@ -1,0 +1,26 @@
+<html>
+  <head>
+    {% if title %}
+    <title>{{ title }} - LinkUP</title>
+    {% else %}
+    <title>Welcome to LinkUP</title>
+    {% endif %}
+  </head>
+  <body>
+    <div>
+      LinkUP:
+      <a href={{ url_for('index') }}>Home</a>
+      <a href={{ url_for('create_event') }}>Create Event</a>
+    </div>
+    <hr>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </body>
+</html>

@@ -1,0 +1,12 @@
+<!-- extend base layour -->
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Edit Event</h1>
+    <form action="" method="post" name="event">
+      {{ form.hidden_tag() }}
+        {% include 'event_data.html' %}
+      <span><input type="submit" value="Save Changes"></span>
+      <span><a href="{{ url_for('index') }}"><input type="button" value="Discard Changes"></a></span>
+    </form>
+{% endblock %}

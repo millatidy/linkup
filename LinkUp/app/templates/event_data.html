@@ -1,0 +1,42 @@
+<p>
+  Name {{ form.name }}
+  {% for error in form.name.errors %}
+    <span style="color: red">[{{ error }}]</span>
+  {% endfor %}<br>
+</p>
+<p>
+  Description {{ form.description }}
+  {% for error in form.description.errors %}
+    <span style="color: red">[{{ error }}]</span>
+  {% endfor %}<br>
+</p>
+<p>
+  Venu {{ form.venu }}
+  {% for error in form.venu.errors %}
+    <span style="color: red">[{{ error }}]</span>
+  {% endfor %}<br>
+</p>
+<p>
+  Date and Time <input type="datetime-local" name="date of event" value='{{ form.date }}'>
+  {% for error in form.date.errors %}
+    <span style="color: red">[{{ error }}]</span>
+  {% endfor %}<br>
+</p>
+<p>
+  End Time <input type="datetime-local" name="date of event" value='{{ form.end_time }}'>
+  {% for error in form.end_time.errors %}
+    <span style="color: red">[{{ error }}]</span>
+  {% endfor %}<br>
+</p>
+<p>
+  Admission {{ form.admission }}
+  {% for error in form.admission.errors %}
+    <span style="color: red">[{{ error }}]</span>
+  {% endfor %}<br>
+</p>
+<p>
+  Category {{ form.category }}
+  {% for error in form.category.errors %}
+    <span style="color: red">[{{ error }}]</span>
+  {% endfor %}<br>
+</p>

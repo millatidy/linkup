@@ -1,0 +1,11 @@
+<!-- extend base layour -->
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>There's nothing here</h1>
+  <p>Whatever you were looking for</p>
+  <p>doesn't currently exist at this address. Unless</p>
+  <p>you were looking for this error page, in which case:</p>
+  <p>Congrats! You totally found it</p>
+  <p><a href="{{ url_for('index') }}">Back</a></p>
+{% endblock %}

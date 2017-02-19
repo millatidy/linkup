@@ -1,0 +1,18 @@
+<!-- extend form base layoout -->
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Sign In</h1>
+  <form action="" method="post" name="login">
+    {{ form.hidden_tag() }}
+    <p>
+      Please enter your username:<br>
+      {{ form.username(size=20) }}
+      {% for error in form.username.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+      {% endfor %}<br>
+    </p>
+    <p>{{ form.remember_me }} Remember_me</p>
+    <p><input type="submit" value="Sign In"></p>
+  </form>
+{% endblock %}
