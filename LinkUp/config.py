@@ -18,3 +18,19 @@ ADMINS = ['tidymilla@gmail.com']
 
 # pagination
 EVENTS_PER_PAGE = 3
+
+# Open Outhentication
+OAUTH_CREDENTIALS = [
+        'facebook' :{
+            'id': '',
+            'secrete': ''
+        },
+        'twitter' :{
+            'id': '16NHDpcGdThjE9xamlW8ADGHj',
+            'secret': 'gf5YRGfDyHxTo81fky4X2ltNhXugnYpHRmqNfYVlaIugx3WpWo'
+        },
+        'google' :{
+            'id': '',
+            'secret': ''
+        }
+]

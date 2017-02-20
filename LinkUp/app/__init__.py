@@ -1,11 +1,15 @@
 #!env/bin/python
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin
 from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
 
 app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
+
+# open authentication stuff
+lm = LoginManager(app)
 
 if not app.debug:
     import logging
