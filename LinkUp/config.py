@@ -15,3 +15,6 @@ MAIL_PASSWORD = None
 
 # administrator list
 ADMINS = ['tidymilla@gmail.com']
+
+# pagination
+EVENTS_PER_PAGE = 3

@@ -1,21 +1,24 @@
 #!env/bin/python
-from flask import render_template, flash, redirect
+from flask import render_template, flash, redirect, g
 from app import app, db
 from .forms import LoginForm, EventForm
 from .models import Event
+from config import EVENTS_PER_PAGE
 
 @app.route('/')
-def index():
+@app.route('/<int:page>')
+def index(page=1):
     user = {'nickname': 'milla'} # fake user
-    events = Event.query.all() # to be changed
-    # to events = Events.query.get(Chiquery)
+    # to be changed
+    events = Event.query.order_by(Event.id.desc()).paginate(page, EVENTS_PER_PAGE, False)
+    # to events = Events.query.get(Chiquery) in the models file
 
     return render_template('index.html',
                             title='Home',
                             user=user,
                             events=events)
 
-                            
+
 # work still needs to be done one this
 # method.
 # users should be able to log in using

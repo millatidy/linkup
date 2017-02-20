@@ -2,9 +2,11 @@
 {% block content %}
   <h1>Hello, {{ user.nickname }}!</h1>
   {% if events %}
-    {% for event in events %}
+    {% for event in events.items %}
       {% include 'event_display.html' %}
     {% endfor %}
+    <p>{% if events.has_prev %}<a href="{{ url_for('index', page=events.prev_num) }}">&lt;&lt; Newer events</a>{% else %}&lt;&lt; Newer events{% endif %} |
+    {% if events.has_next %}<a href="{{ url_for('index', page=events.next_num) }}">Older events &gt;&gt;</a>{% else %}Older events &gt;&gt;{% endif %}</p>
   {% else %}
     <div id='no_event'>
       <span>Oops no events have been found that match your preferences</span>
