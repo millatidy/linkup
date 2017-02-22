@@ -1,8 +1,8 @@
 #!env/bin/python
-from flask import render_template, flash, redirect, g
-from app import app, db, lm
+from flask import render_template, flash, redirect, g, url_for
+from app import app, db, lm, current_user, login_user, logout_user, login_required
 from .forms import LoginForm, EventForm
-from .models import Event
+from .models import User, Event
 from .oauth import OAuthSignIn
 from config import EVENTS_PER_PAGE
 
@@ -12,17 +12,17 @@ def load_user(id):
     return User.query.get(int(id))
 
 
-@app.route('/authorize/<provider')
+@app.route('/authorize/<provider>')
 def oauth_authorize(provider):
-    if not current_user.is_anonymous():
+    if not current_user.is_anonymous:
         return redirect(url_for('index'))
     oauth = OAuthSignIn.get_provider(provider)
     return oauth.authorize()
-    
+
 
 @app.route('/callback/<provider>')
 def oauth_callback(provider):
-    if not current_user.is_anonymous():
+    if not current_user.is_anonymous:
         return redirect(url_for('index'))
     oauth = OAuthSignIn.get_provider(provider)
     social_id, username, email = oauth.callback()
@@ -36,21 +36,6 @@ def oauth_callback(provider):
         db.session.commit()
     login_user(user, True)
     return redirect(url_for('index'))
-
-
-@app.route('/')
-@app.route('/<int:page>')
-def index(page=1):
-    user = {'nickname': 'milla'} # fake user
-    # to be changed
-    events = Event.query.order_by(Event.id.desc()).paginate(page, EVENTS_PER_PAGE, False)
-    # to events = Events.query.get(Chiquery) in the models file
-
-    return render_template('index.html',
-                            title='Home',
-                            user=user,
-                            events=events)
-
 
 # work still needs to be done one this
 # method.
@@ -67,8 +52,29 @@ def login():
                             title='Sign In',
                             form=form)
 
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+
+@app.route('/')
+@app.route('/<int:page>')
+@login_required
+def index(page=1):
+    user = current_user.nickname
+    # to be changed
+    events = Event.query.order_by(Event.id.desc()).paginate(page, EVENTS_PER_PAGE, False)
+    # to events = Events.query.get(Chiquery) in the models file
+
+    return render_template('index.html',
+                            title='Home',
+                            user=user,
+                            events=events)
+
 
 @app.route('/event', methods=['GET', 'POST'])
+@login_required
 def create_event():
     form = EventForm()
 
@@ -76,7 +82,7 @@ def create_event():
         e = Event(name=form.name.data, description=form.description.data,
                   venu=form.venu.data,date=form.date.data,
                   end_time=form.end_time.data, admission=form.admission.data,
-                  category=form.category.data
+                  category=form.category.data, user_id=current_user.id
                   )
         db.session.add(e)
         db.session.commit()
@@ -87,6 +93,7 @@ def create_event():
                     form=form)
 
 @app.route('/event/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
 def edit_event(id):
     form = EventForm()
     e = Event.query.get(id)
@@ -117,6 +124,7 @@ def edit_event(id):
                             form=form)
 
 @app.route('/event/<int:id>/delete', methods=['GET', 'POST'])
+@login_required
 def delete_event(id):
     e = Event.query.get(id)
 

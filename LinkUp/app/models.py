@@ -1,10 +1,10 @@
-from app import db
+from app import db, UserMixin
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    social_id = db.Column(db.String(64), index=True, nullable=False, unique=True)
+    social_id = db.Column(db.String(64), index=True, unique=True)
     nickname = db.Column(db.String(64), nullable=False)
-    email = db.Column(db.String(64), index=True, unique=True, nullable=True)
+    email = db.Column(db.String(64), index=True, nullable=True)
     events = db.relationship('Event', backref='author', lazy='dynamic')
 
     def __repr__(self):

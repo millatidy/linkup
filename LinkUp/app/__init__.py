@@ -1,7 +1,7 @@
 #!env/bin/python
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin
+from flask_login import LoginManager, UserMixin, current_user, login_user, logout_user, login_required
 from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
 
 app = Flask(__name__)
@@ -10,6 +10,7 @@ db = SQLAlchemy(app)
 
 # open authentication stuff
 lm = LoginManager(app)
+lm.login_view = 'login'
 
 if not app.debug:
     import logging
@@ -30,4 +31,4 @@ if not app.debug:
     app.logger.addHandler(file_handler)
     app.logger.info('linkup startup')
 
-from app import views, models
+from app import views, models, oauth
