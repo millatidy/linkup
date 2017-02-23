@@ -10,7 +10,10 @@
   {% endif %}
   <span>{{ event.admission }}</span>
   <span>{{ event.category }}</span>
-  <span>Posted by: {{ event.author.nickname }}</span><br>
+  <!-- if to be removed -->
+  {% if event.author %}
+    <span>Posted by:<a href={{ url_for('user_profile', id=event.author.id) }}> {{ event.author.username }}</a></span><br>
+  {% endif %}
   <span><a href={{ url_for('edit_event', id=event.id) }}>Edit</a></span>
   <span><a href="{{ url_for('delete_event', id=event.id)}}">Delete</a></span>
 </div>

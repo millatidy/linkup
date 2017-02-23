@@ -31,8 +31,11 @@ def oauth_callback(provider):
         return redirect(url_for('index'))
     user = User.query.filter_by(social_id=social_id).first()
     if not user:
-        user = User(social_id=social_id, nickname=username, email=email)
+        user = User(social_id=social_id, username=username, email=email)
         db.session.add(user)
+        db.session.commit()
+        # make the user follow him/herself
+        db.session.add(user.follow(user))
         db.session.commit()
     login_user(user, True)
     return redirect(url_for('index'))
@@ -62,18 +65,15 @@ def logout():
 @app.route('/<int:page>')
 @login_required
 def index(page=1):
-    user = current_user.nickname
-    # to be changed
-    events = Event.query.order_by(Event.id.desc()).paginate(page, EVENTS_PER_PAGE, False)
-    # to events = Events.query.get(Chiquery) in the models file
-
+    user = current_user.username
+    events = current_user.followed_events()
     return render_template('index.html',
                             title='Home',
                             user=user,
                             events=events)
 
 
-@app.route('/event', methods=['GET', 'POST'])
+@app.route('/new', methods=['GET', 'POST'])
 @login_required
 def create_event():
     form = EventForm()
@@ -92,7 +92,7 @@ def create_event():
                     title='New Event',
                     form=form)
 
-@app.route('/event/<int:id>/edit', methods=['GET', 'POST'])
+@app.route('/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_event(id):
     form = EventForm()
@@ -123,7 +123,7 @@ def edit_event(id):
                             title='Edit Event',
                             form=form)
 
-@app.route('/event/<int:id>/delete', methods=['GET', 'POST'])
+@app.route('/<int:id>/delete', methods=['GET', 'POST'])
 @login_required
 def delete_event(id):
     e = Event.query.get(id)
@@ -132,6 +132,14 @@ def delete_event(id):
     db.session.commit()
 
     return redirect('')
+
+@app.route('/user/<int:id>')
+@login_required
+def user_profile(id):
+    user = User.query.get(id)
+    return render_template('user_profile.html',
+                            user=user,
+                            title=user.username)
 
 
 @app.errorhandler(404)
