@@ -5,7 +5,7 @@
   <h1>Name {{ user.nickname }}</h1>
   <p>Email {{ user.email }}</p>
   <h2>Events</h2>
-  {% if events %}
+  {% if events.items %}
     {% for event in events.items %}
       {% include 'event_display.html' %}
     {% endfor %}

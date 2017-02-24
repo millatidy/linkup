@@ -17,7 +17,7 @@ MAIL_PASSWORD = None
 ADMINS = ['tidymilla@gmail.com']
 
 # pagination
-EVENTS_PER_PAGE = 3
+EVENTS_PER_PAGE = 1
 
 # Open Outhentication
 OAUTH_CREDENTIALS = {
@@ -34,16 +34,3 @@ OAUTH_CREDENTIALS = {
         'secret': '6SCMQCVHcIMGkpYX_lYWuv7A'
     }
 }
-
-        # 'facebook' : {
-        #     'id': '',
-        #     'secrete': ''
-        # },
-        # 'twitter' : {
-        #     'id': '16NHDpcGdThjE9xamlW8ADGHj',
-        #     'secret': 'gf5YRGfDyHxTo81fky4X2ltNhXugnYpHRmqNfYVlaIugx3WpWo'
-        # },
-        # 'google' : {
-        #     'id': '',
-        #     'secret': ''
-        # }

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
   <h1>Hello, {{ user_nickname }}!</h1>
-  {% if events %}
+  {% if events.items %}
     {% for event in events.items %}
       {% include 'event_display.html' %}
     {% endfor %}
