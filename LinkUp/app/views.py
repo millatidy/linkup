@@ -142,6 +142,9 @@ def delete_event(id):
 @login_required
 def user(username, page=1):
     user = User.query.filter_by(username=username).first()
+    if user == None:
+        flash('User %s not found.' % username)
+        return redirect(url_for('index'))
     events = user.events.paginate(page, EVENTS_PER_PAGE, False)
     return render_template('user_profile.html',
                             user=user,
