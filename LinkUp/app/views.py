@@ -151,6 +151,44 @@ def user(username, page=1):
                             events=events,
                             title=user.nickname)
 
+@app.route('/<username>/follow')
+@login_required
+def follow(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('User % not found.' % username)
+        return redirect(url_for('index'))
+    if user == current_user:
+        flash('You can\'t follow yourself')
+        return redirect(url_for('user', username=username))
+    u = current_user.follow(user)
+    if u is None:
+        flash('Cannot follow ' + username + '.')
+        return redirect(url_for('user', username=username))
+    db.session.add(u)
+    db.session.commit()
+    flash('You are now following ' + username + '!')
+    return redirect(url_for('user', username=username))
+
+@app.route('/<username>/unfollow')
+@login_required
+def unfollow(nickname):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('User %s not found.' % username)
+        return redirect(url_for('index'))
+    if user == current_user:
+        flash('You can\'t unfollow yourself!')
+        return redirect(url_for('user', username=username))
+    u = current_user.unfollow(user)
+    if u is None:
+        flash('Cannot unfollow ' + username + '.')
+        return redirect(url_for('user', usename=username))
+    db.session.add(u)
+    db.session.commit()
+    flash('You have stopped following ' + nickname + '.')
+    return redirect(url_for('user', nickname=nickname))
+
 
 @app.errorhandler(404)
 def not_found_error(error):
