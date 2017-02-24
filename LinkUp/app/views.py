@@ -31,7 +31,11 @@ def oauth_callback(provider):
         return redirect(url_for('index'))
     user = User.query.filter_by(social_id=social_id).first()
     if not user:
-        user = User(social_id=social_id, username=username, email=email)
+        # this is to be modified later on as the systems becomes sugestive not
+        # generative
+        nickname=username
+        username = User.make_unique_username(username)
+        user = User(social_id=social_id, username=username, nickname=nickname, email=email)
         db.session.add(user)
         db.session.commit()
         # make the user follow him/herself
@@ -65,11 +69,11 @@ def logout():
 @app.route('/<int:page>')
 @login_required
 def index(page=1):
-    user = current_user.username
-    events = current_user.followed_events()
+    user_nickname = current_user.nickname
+    events = current_user.followed_events().paginate(page, EVENTS_PER_PAGE, False)
     return render_template('index.html',
                             title='Home',
-                            user=user,
+                            user_nickname=user_nickname,
                             events=events)
 
 
@@ -133,13 +137,16 @@ def delete_event(id):
 
     return redirect('')
 
-@app.route('/user/<int:id>')
+@app.route('/<username>')
+@app.route('/<username>/<int:page>')
 @login_required
-def user_profile(id):
-    user = User.query.get(id)
+def user(username, page=1):
+    user = User.query.filter_by(username=username).first()
+    events = user.events.paginate(page, EVENTS_PER_PAGE, False)
     return render_template('user_profile.html',
                             user=user,
-                            title=user.username)
+                            events=events,
+                            title=user.nickname)
 
 
 @app.errorhandler(404)

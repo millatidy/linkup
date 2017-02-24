@@ -4,4 +4,14 @@
 {% block content %}
   <h1>Name {{ user.nickname }}</h1>
   <p>Email {{ user.email }}</p>
+  <h2>Events</h2>
+  {% if events %}
+    {% for event in events.items %}
+      {% include 'event_display.html' %}
+    {% endfor %}
+    <p>{% if events.has_prev %}<a href="{{ url_for('user', username=user.username, page=events.prev_num) }}">&lt;&lt; Newer events</a>{% else %}&lt;&lt; Newer events{% endif %} |
+    {% if events.has_next %}<a href="{{ url_for('user', username=user.username, page=events.next_num) }}">Older events &gt;&gt;</a>{% else %}Older events &gt;&gt;{% endif %}</p>
+  {% else %}
+    <p>Oops nothing to display here</a>
+  {% endif %}
 {% endblock %}
