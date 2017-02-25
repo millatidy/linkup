@@ -11,7 +11,9 @@ class User(UserMixin, db.Model):
     social_id = db.Column(db.String(64), index=True, unique=True)
     username = db.Column(db.String(64), index=True, unique=True)
     nickname = db.Column(db.String(64), nullable=False)
-    email = db.Column(db.String(64), index=True, nullable=True)
+    email = db.Column(db.String(64), unique=True, nullable=True)
+    website = db.Column(db.String(64))
+    bio = db.Column(db.String(120))
     events = db.relationship('Event', backref='author', lazy='dynamic')
     followed = db.relationship('User',
                                     secondary=followers,

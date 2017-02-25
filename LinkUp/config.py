@@ -17,7 +17,7 @@ MAIL_PASSWORD = None
 ADMINS = ['tidymilla@gmail.com']
 
 # pagination
-EVENTS_PER_PAGE = 1
+EVENTS_PER_PAGE = 3
 
 # Open Outhentication
 OAUTH_CREDENTIALS = {

@@ -17,3 +17,11 @@ class EventForm(Form):
     end_time = DateTimeField('End time', format='%m/%d/%y %h:%m %s')
     category = StringField('Category', validators=[DataRequired()])
     admission = StringField('Admission', validators=[DataRequired()])
+
+
+class EditUserForm(Form):
+    nickname = StringField('Displap Name', validators=[DataRequired(), Length(max=64)])
+    username = StringField('User Name', validators=[DataRequired(), Length(max=64)])
+    email = StringField('Email', validators=[Length(max=64)])
+    website = StringField('Website', validators=[Length(max=64)])
+    bio = StringField('Bio', validators=[Length(max=120)])

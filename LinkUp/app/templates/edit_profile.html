@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Edit Profile</h1>
+    <form action="" method="post" name="profile">
+      {{ form.hidden_tag() }}
+        <p>Nickname {{ form.nickname }}</p>
+        <p>Username {{ form.username }}</p>
+        <p>Email {{ form.email }}</p>
+        <p>Website {{ form.website }}</p>
+        <p>Bio {{ form.bio }}</p>
+        <span><input type="submit" value="Save changes"></span>
+        <span><a href="{{ url_for('user', username=current_user.username) }}"><input type="button" value="Discard Changes"></a></span>
+{% endblock %}

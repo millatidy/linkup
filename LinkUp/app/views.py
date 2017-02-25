@@ -1,7 +1,7 @@
 #!env/bin/python
 from flask import render_template, flash, redirect, g, url_for
 from app import app, db, lm, current_user, login_user, logout_user, login_required
-from .forms import LoginForm, EventForm
+from .forms import LoginForm, EventForm, EditUserForm
 from .models import User, Event
 from .oauth import OAuthSignIn
 from config import EVENTS_PER_PAGE
@@ -150,6 +150,30 @@ def user(username, page=1):
                             user=user,
                             events=events,
                             title=user.nickname)
+
+@app.route('/account/edit', methods=['GET', 'POST'])
+@login_required
+def edit_user():
+    form = EditUserForm()
+    if form.validate_on_submit():
+        current_user.nickname = form.nickname.data
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        current_user.website = form.website.data
+        current_user.bio = form.bio.data
+        db.session.add(current_user)
+        db.session.commit()
+        flash('Your changes have been saved.')
+        return redirect(url_for('user', username=current_user.username))
+    else:
+        form.nickname.data = current_user.nickname
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+        form.website.data = current_user.website
+        form.bio.data = current_user.bio
+    return render_template('edit_profile.html',
+                    form=form,
+                    title=current_user.nickname)
 
 @app.route('/<username>/follow')
 @login_required
