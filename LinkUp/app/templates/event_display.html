@@ -14,6 +14,8 @@
   {% if event.author %}
     <span>Posted by:<a href={{ url_for('user', username=event.author.username) }}> {{ event.author.nickname }}</a></span><br>
   {% endif %}
-  <span><a href={{ url_for('edit_event', id=event.id) }}>Edit</a></span>
-  <span><a href="{{ url_for('delete_event', id=event.id)}}">Delete</a></span>
+  {% if current_user.id == event.author.id %}
+    <span><a href={{ url_for('edit_event', id=event.id) }}>Edit</a></span>
+    <span><a href="{{ url_for('delete_event', id=event.id)}}">Delete</a></span>
+  {% endif %}
 </div>
