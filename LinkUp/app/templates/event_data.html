@@ -17,13 +17,13 @@
   {% endfor %}<br>
 </p>
 <p>
-  Date and Time <input type="datetime-local" name="date of event" value='{{ form.date }}'>
+  Start Date  <br> {% include 'datetimedata.html' %}
   {% for error in form.date.errors %}
     <span style="color: red">[{{ error }}]</span>
   {% endfor %}<br>
 </p>
 <p>
-  End Time <input type="datetime-local" name="date of event" value='{{ form.end_time }}'>
+  End Date <br> {% include 'datetimedata.html' %}
   {% for error in form.end_time.errors %}
     <span style="color: red">[{{ error }}]</span>
   {% endfor %}<br>

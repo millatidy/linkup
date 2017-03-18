@@ -1,4 +1,5 @@
 from app import db, UserMixin
+from hashlib import md5
 
 
 followers = db.Table('followers',
@@ -53,6 +54,12 @@ class User(UserMixin, db.Model):
         # this query is to be edited
         return Event.query.join(followers, (followers.c.followed_id == Event.user_id)).filter(followers.c.follower_id == self.id).order_by(Event.id.desc())
 
+    # def events(self, user):
+    #     return self.events
+
+    def avatar(self, size):
+        return 'http://www.gravatar.com/avatar/%s?d=mm&s=%d' % (md5(self.email.encode('utf-8')).hexdigest(), size)
+
     def __repr__(self):
         return '<User %r>' % (self.username)
 
@@ -70,3 +77,13 @@ class Event(db.Model):
 
     def __repr__(self):
         return '<Event %r>' % (self.name)
+
+
+class Location(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120))
+    latitue = db.Column(db.DECIMAL(6,4)) # -90 tp 90 degrees south pole to north pole
+    longitude = db.Column(db.DECIMAL(7,4)) # -180 to 180 degress west to east
+
+    def __repr__(self):
+        return '<Location %r>' % (self.name)

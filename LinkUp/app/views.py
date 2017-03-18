@@ -1,5 +1,6 @@
 #!env/bin/python
 from flask import render_template, flash, redirect, g, url_for
+from datetime import datetime
 from app import app, db, lm, current_user, login_user, logout_user, login_required
 from .forms import LoginForm, EventForm, EditUserForm
 from .models import User, Event
@@ -80,6 +81,7 @@ def index(page=1):
 @app.route('/new', methods=['GET', 'POST'])
 @login_required
 def create_event():
+    year = datetime.today().year
     form = EventForm()
 
     if form.validate_on_submit():
@@ -94,11 +96,13 @@ def create_event():
 
     return render_template('create_event.html',
                     title='New Event',
+                    year=year,
                     form=form)
 
 @app.route('/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_event(id):
+    year = datetime.today().year
     form = EventForm()
     e = Event.query.get(id)
 
@@ -125,6 +129,7 @@ def edit_event(id):
 
     return render_template('edit_event.html',
                             title='Edit Event',
+                            year=year,
                             form=form)
 
 @app.route('/<int:id>/delete', methods=['GET', 'POST'])
@@ -145,7 +150,7 @@ def user(username, page=1):
     if user == None:
         flash('User %s not found.' % username)
         return redirect(url_for('index'))
-    events = user.events.paginate(page, EVENTS_PER_PAGE, False)
+    events = user.events.order_by(Event.id.desc()).paginate(page, EVENTS_PER_PAGE, False)
     return render_template('user_profile.html',
                             user=user,
                             events=events,

@@ -1,0 +1,26 @@
+{# experiment #} Year <input type="text" name "year" list="year"> Month <input type="text" name "month" list="month"> Day <input type="text" name "day" list="day"> Time <br> Hour <input type="text" name "day" list="hour"> Minute <input type="text" name
+    "day" list="munite">
+<datalist id="year">
+    <option value="{{year}}">
+    <option value="{{year + 1}}">
+  </datalist>
+<datalist id="month">
+    {% for month in range(12) %}
+     <option value="{{month+1}}">
+    {% endfor %}
+  </datalist>
+<datalist id="day">
+    {% for day in range(31) %}
+     <option value="{{day+1}}">
+    {% endfor %}
+  </datalist>
+<datalist id="hour">
+    {% for hour in range(12) %}
+     <option value="{{hour+1}}">
+    {% endfor %}
+  </datalist>
+<datalist id="munite">
+    {% for munite in range(0,60,5) %}
+     <option value="{{munite}}">
+    {% endfor %}
+  </datalist> {# end of experiment #}
