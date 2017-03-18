@@ -26,3 +26,6 @@ class EditUserForm(Form):
     email = StringField('Email', validators=[Length(max=64)])
     website = StringField('Website', validators=[Length(max=64)])
     bio = StringField('Bio', validators=[Length(max=120)])
+
+class SearchForm(Form):
+    search = StringField('search', validators=[DataRequired()])

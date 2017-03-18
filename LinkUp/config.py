@@ -4,8 +4,13 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 WTF_CSRF_ENABLED = True
 SECRET_KEY = 'klfsalkfafasdfwrtpuier'
 
+# SQLAlchemy database config
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
+
+# Whoosh Alchemy config
+WHOOSH_BASE = os.path.join(basedir, 'search.db')
+MAXIMUM_SEARCH_RESULTS = 5
 
 # mail server settings
 MAIL_SERVER = 'localhost'

@@ -1,0 +1,13 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+  {% if results %}
+    <h1>Search results for "{{ query }}":</h1>
+    {% for event in results %}
+      {% include 'event_display.html' %}
+    {% endfor %}
+  {% else %}
+  <h1>Opps nothing found matching "{{ query }}" please try anohter search</h1>
+  {% endif %}
+{% endblock %}

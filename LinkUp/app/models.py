@@ -1,5 +1,12 @@
-from app import db, UserMixin
+from app import app, db, UserMixin
 from hashlib import md5
+
+import sys
+if sys.version_info >= (3, 0):
+    enable_search = False
+else:
+    enable_search = True
+    import flask.ext.whooshalchemy as whooshalchemy
 
 
 followers = db.Table('followers',
@@ -23,6 +30,23 @@ class User(UserMixin, db.Model):
                                     backref=db.backref('followers', lazy='dynamic'),
                                     lazy='dynamic'
                                 )
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        try:
+            return unicode(self.id)  # python 2
+        except NameError:
+            return str(self.id)  # python 3
 
     # This method is to be changed to give sugestions
     @staticmethod
@@ -58,13 +82,15 @@ class User(UserMixin, db.Model):
     #     return self.events
 
     def avatar(self, size):
-        return 'http://www.gravatar.com/avatar/%s?d=mm&s=%d' % (md5(self.email.encode('utf-8')).hexdigest(), size)
+        return 'http://www.gravatar.com/avatar/%s?d=mm&s=%d' % (md5(self.social_id.encode('utf-8')).hexdigest(), size)
 
     def __repr__(self):
         return '<User %r>' % (self.username)
 
 
 class Event(db.Model):
+    __searchable__ = ['name', 'venu', 'description', 'category']
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
     description = db.Column(db.String(120))
@@ -87,3 +113,6 @@ class Location(db.Model):
 
     def __repr__(self):
         return '<Location %r>' % (self.name)
+
+if enable_search:
+    whooshalchemy.whoosh_index(app, Event)

@@ -1,12 +1,19 @@
 #!env/bin/python
-from flask import render_template, flash, redirect, g, url_for
+from flask import render_template, flash, redirect, request, g, url_for
 from datetime import datetime
 from app import app, db, lm, current_user, login_user, logout_user, login_required
-from .forms import LoginForm, EventForm, EditUserForm
+from .forms import LoginForm, EventForm, EditUserForm, SearchForm
 from .models import User, Event
 from .oauth import OAuthSignIn
-from config import EVENTS_PER_PAGE
+from config import EVENTS_PER_PAGE, MAXIMUM_SEARCH_RESULTS
 
+
+@app.before_request
+def before_request():
+    g.user = current_user
+    if g.user.is_authenticated:
+        # can add last seen herself
+        g.search_form = SearchForm()
 
 @lm.user_loader
 def load_user(id):
@@ -15,7 +22,7 @@ def load_user(id):
 
 @app.route('/authorize/<provider>')
 def oauth_authorize(provider):
-    if not current_user.is_anonymous:
+    if g.user is not None and g.user.is_authenticated:
         return redirect(url_for('index'))
     oauth = OAuthSignIn.get_provider(provider)
     return oauth.authorize()
@@ -23,7 +30,7 @@ def oauth_authorize(provider):
 
 @app.route('/callback/<provider>')
 def oauth_callback(provider):
-    if not current_user.is_anonymous:
+    if g.user is not None and g.user.is_authenticated:
         return redirect(url_for('index'))
     oauth = OAuthSignIn.get_provider(provider)
     social_id, username, email = oauth.callback()
@@ -65,18 +72,31 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-
 @app.route('/')
 @app.route('/<int:page>')
 @login_required
 def index(page=1):
-    user_nickname = current_user.nickname
-    events = current_user.followed_events().paginate(page, EVENTS_PER_PAGE, False)
+    user_nickname = g.user.nickname
+    events = g.user.followed_events().paginate(page, EVENTS_PER_PAGE, False)
     return render_template('index.html',
                             title='Home',
                             user_nickname=user_nickname,
                             events=events)
 
+@app.route('/search', methods=['POST'])
+@login_required
+def search():
+    if not g.search_form.validate_on_submit():
+        return redirect(url_for('index'))
+    return redirect(url_for('search_results', query=g.search_form.search.data))
+
+@app.route('/search_results/<query>')
+@login_required
+def search_results(query):
+    results = Event.query.whoosh_search(query, MAXIMUM_SEARCH_RESULTS).all()
+    return render_template('search_results.html',
+                            query=query,
+                            results=results)
 
 @app.route('/new', methods=['GET', 'POST'])
 @login_required
@@ -88,7 +108,7 @@ def create_event():
         e = Event(name=form.name.data, description=form.description.data,
                   venu=form.venu.data,date=form.date.data,
                   end_time=form.end_time.data, admission=form.admission.data,
-                  category=form.category.data, user_id=current_user.id
+                  category=form.category.data, user_id=g.user.id
                   )
         db.session.add(e)
         db.session.commit()
@@ -161,24 +181,24 @@ def user(username, page=1):
 def edit_user():
     form = EditUserForm()
     if form.validate_on_submit():
-        current_user.nickname = form.nickname.data
-        current_user.username = form.username.data
-        current_user.email = form.email.data
-        current_user.website = form.website.data
-        current_user.bio = form.bio.data
-        db.session.add(current_user)
+        g.user_user.nickname = form.nickname.data
+        g.user.username = form.username.data
+        g.user.email = form.email.data
+        g.user.website = form.website.data
+        g.user.bio = form.bio.data
+        db.session.add(g.user)
         db.session.commit()
         flash('Your changes have been saved.')
-        return redirect(url_for('user', username=current_user.username))
+        return redirect(url_for('user', username=g.user.username))
     else:
-        form.nickname.data = current_user.nickname
-        form.username.data = current_user.username
-        form.email.data = current_user.email
-        form.website.data = current_user.website
-        form.bio.data = current_user.bio
+        form.nickname.data = g.user.nickname
+        form.username.data = g.user.username
+        form.email.data = g.user.email
+        form.website.data = g.user.website
+        form.bio.data = g.user.bio
     return render_template('edit_profile.html',
                     form=form,
-                    title=current_user.nickname)
+                    title=g.user.nickname)
 
 @app.route('/<username>/follow')
 @login_required
@@ -187,10 +207,10 @@ def follow(username):
     if user is None:
         flash('User % not found.' % username)
         return redirect(url_for('index'))
-    if user == current_user:
+    if user == g.user:
         flash('You can\'t follow yourself')
         return redirect(url_for('user', username=username))
-    u = current_user.follow(user)
+    u = g.user.follow(user)
     if u is None:
         flash('Cannot follow ' + username + '.')
         return redirect(url_for('user', username=username))
@@ -206,10 +226,10 @@ def unfollow(nickname):
     if user is None:
         flash('User %s not found.' % username)
         return redirect(url_for('index'))
-    if user == current_user:
+    if user == g.user:
         flash('You can\'t unfollow yourself!')
         return redirect(url_for('user', username=username))
-    u = current_user.unfollow(user)
+    u = g.user.unfollow(user)
     if u is None:
         flash('Cannot unfollow ' + username + '.')
         return redirect(url_for('user', usename=username))
