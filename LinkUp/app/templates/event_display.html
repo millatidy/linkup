@@ -2,7 +2,7 @@
   <p><img src="{{ event.author.avatar(50) }}"></p>
   <h3>{{ event.name }}</h3>
   <span>{{ event.description }}</span><br>
-  <span>{{ event.venu }}</span>
+  <span><a href="{{ event.venu.id }}">{{ event.venu.name }}</a></span>
   <span>{{ event.date }}</span>
   {% if event.end_time %}
     <span>{{ event.end_time }}</span>

@@ -82,7 +82,7 @@ class User(UserMixin, db.Model):
     #     return self.events
 
     def avatar(self, size):
-        return 'http://www.gravatar.com/avatar/%s?d=mm&s=%d' % (md5(self.social_id.encode('utf-8')).hexdigest(), size)
+        return 'http://www.gravatar.com/avatar/%s?d=mm&s=%d' % (md5(self.email.encode('utf-8')).hexdigest(), size)
 
     def __repr__(self):
         return '<User %r>' % (self.username)
@@ -94,22 +94,36 @@ class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
     description = db.Column(db.String(120))
-    venu = db.Column(db.String(64))
     date = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime)
     admission = db.Column(db.String(20), default='free')
     category = db.Column(db.String(20))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    location_id = db.Column(db.Integer, db.ForeignKey('location.id'))
 
     def __repr__(self):
         return '<Event %r>' % (self.name)
 
-
+# more modifications to be done here
 class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120))
-    latitue = db.Column(db.DECIMAL(6,4)) # -90 tp 90 degrees south pole to north pole
-    longitude = db.Column(db.DECIMAL(7,4)) # -180 to 180 degress west to east
+    latitude = db.Column(db.String(12)) # -90 tp 90 degrees south pole to north pole db.DECIMAL(6,4)
+    longitude = db.Column(db.String(12)) # -180 to 180 degress west to east db.DECIMAL(7,4)
+    events = db.relationship('Event', backref='venu', lazy='dynamic')
+    # sqlite 3 does not support this constraint
+    __table_args__ = (db.UniqueConstraint('latitude', 'longitude'),)
+
+    @staticmethod
+    def check_saved_location(name, latitude, longitude):
+        location = Location.query.filter_by(latitude=latitude, longitude=longitude).first()
+        if location is None:
+            location = Location(name=name, latitude=latitude, longitude=longitude)
+            db.session.add(location)
+            db.session.commit()
+            return location # return False # line for test
+        else:
+            return location # return True # line for test
 
     def __repr__(self):
         return '<Location %r>' % (self.name)

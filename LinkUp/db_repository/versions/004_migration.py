@@ -8,8 +8,20 @@ post_meta = MetaData()
 location = Table('location', post_meta,
     Column('id', Integer, primary_key=True, nullable=False),
     Column('name', String(length=120)),
-    Column('latitue', DECIMAL(precision=6, scale=4)),
-    Column('longitude', DECIMAL(precision=7, scale=4)),
+    Column('latitude', String(length=8)),
+    Column('longitude', String(length=9)),
+)
+
+event = Table('event', post_meta,
+    Column('id', Integer, primary_key=True, nullable=False),
+    Column('name', String(length=64)),
+    Column('description', String(length=120)),
+    Column('date', DateTime),
+    Column('end_time', DateTime),
+    Column('admission', String(length=20), default=ColumnDefault('free')),
+    Column('category', String(length=20)),
+    Column('user_id', Integer),
+    Column('location_id', Integer),
 )
 
 
@@ -19,6 +31,7 @@ def upgrade(migrate_engine):
     pre_meta.bind = migrate_engine
     post_meta.bind = migrate_engine
     post_meta.tables['location'].create()
+    post_meta.tables['event'].columns['location_id'].create()
 
 
 def downgrade(migrate_engine):
@@ -26,3 +39,4 @@ def downgrade(migrate_engine):
     pre_meta.bind = migrate_engine
     post_meta.bind = migrate_engine
     post_meta.tables['location'].drop()
+    post_meta.tables['event'].columns['location_id'].drop()

@@ -3,7 +3,7 @@ from flask import render_template, flash, redirect, request, g, url_for
 from datetime import datetime
 from app import app, db, lm, current_user, login_user, logout_user, login_required
 from .forms import LoginForm, EventForm, EditUserForm, SearchForm
-from .models import User, Event
+from .models import User, Event, Location
 from .oauth import OAuthSignIn
 from config import EVENTS_PER_PAGE, MAXIMUM_SEARCH_RESULTS
 
@@ -105,10 +105,11 @@ def create_event():
     form = EventForm()
 
     if form.validate_on_submit():
-        e = Event(name=form.name.data, description=form.description.data,
-                  venu=form.venu.data,date=form.date.data,
+        location = Location.check_saved_location(name=form.venu.data, latitude=form.latitude.data,
+        longitude=form.longitude.data)
+        e = Event(name=form.name.data, description=form.description.data,date=form.date.data,
                   end_time=form.end_time.data, admission=form.admission.data,
-                  category=form.category.data, user_id=g.user.id
+                  category=form.category.data, user_id=g.user.id, venu=location
                   )
         db.session.add(e)
         db.session.commit()
@@ -127,9 +128,12 @@ def edit_event(id):
     e = Event.query.get(id)
 
     if form.validate_on_submit():
+        location = Location.check_saved_location(name=form.venu.data, latitude=form.latitude.data,
+        longitude=form.longitude.data)
+        ####
         e.name=form.name.data
         e.description=form.description.data
-        e.venu=form.venu.data
+        e.venu=location
         e.date=form.date.data
         e.end_time=form.end_time.data
         e.admission=form.admission.data
@@ -141,7 +145,9 @@ def edit_event(id):
 
     form.name.data=e.name
     form.description.data=e.description
-    form.venu.data=e.venu
+    form.venu.data=e.venu.name
+    form.latitude.data=e.venu.latitude
+    form.longitude.data=e.venu.longitude
     form.date.data=e.date
     form.end_time.data=e.end_time
     form.admission.data=e.admission

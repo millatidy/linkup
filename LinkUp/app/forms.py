@@ -14,6 +14,8 @@ class EventForm(Form):
     name = StringField('Name of event', validators=[DataRequired(), Length(max=64)])
     description = StringField('Description', validators=[DataRequired(), Length(max=120)])
     venu = StringField('Venu', validators=[DataRequired(), Length(max=64)])
+    latitude = StringField('latitude', validators=[Length(max=12)])
+    longitude = StringField('longitude', validators=[Length(max=12)])
     date = DateField('Start Date Time')
     end_time = DateTimeLocalField('End Date Time')
     category = StringField('Category', validators=[DataRequired()])
